@@ -1,7 +1,6 @@
 #cloud-config
 packages:
   - fail2ban
-  - ufw
   - docker.io
 package_update: true
 package_upgrade: true
