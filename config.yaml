@@ -1,6 +1,6 @@
 #cloud-config
 packages:
   - fail2ban
-  - docker.io
+  - neofetch
 package_update: true
 package_upgrade: true
