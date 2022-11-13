@@ -1,6 +1,27 @@
 #cloud-config
+users:
+  - name: narek
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/oZ8SW7WbbQ9hxTzFeEy0uxDK+lxpOjz2ckCnCTAdNBgbGX40XiMwXHxCAvMOE3O34F0h1f1v7rdWcm65/XPA4xCFkbta6GdcSNbOlMHgTrY4CsF1kvHYUA/D40FwwnQdOYIgfGp73FyujlE+4tlWQ0cCTVfeiKstN0F0x8XkOBKI1S0TDKUi7MQO7DQAYAKNwj7DPn+5oNoUBcsn8PHRPFb9zYdiKQ9CBoXW1O+ZZc7jC66HEhxRLhcIj6QaR16yiSxIIJTHcNTqlAlydAa2kkGSIP/4wrVQdP21kGn7pCMPi8aDFdcLveXGcCelt2qPjlApiz8ZMrrDChi1ExxGMJCKR+4PZBIakJT27pGQ5V4FAHbt+5HEgo6I14clXvbW98f24moet3VqHcjRb1Nm7AoGNpEHgS/Ork40phgjFqTTAnYEZpSYcn1gtUL0j2DW7XlYPaLlxFWOnmsZGOhbcTPbUrPp5WH/71Ube3Jn2gG07yor2qNQ2vVdOidMu96qA96TRoLaxgnk/mYhkDPznkRmnCHt8QG47kmHtLDdenGGRtFcS3s1D3A8y0LSN7oTZYwFFFFzBtFU+6vP/+PTflvRyM4nkau/evvzMr6TLGdN4IitSBmY/sGlvIDaSxInES2XrYGHBP4MirfaMHbn12R55zzEWdtyxng7V/J9cQ=="
 packages:
   - fail2ban
-  - neofetch
+  - ufw
 package_update: true
 package_upgrade: true
+runcmd:
+  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+  - ufw allow OpenSSH
+  - ufw enable
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -i -e '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^#MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+  - sed -i -e '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+  - sed -i '$a AllowUsers narek' /etc/ssh/sshd_config
+  - reboot
