@@ -20,7 +20,7 @@ runcmd:
   - apt install caddy
   - apt install docker.io -y
   - rm -rf /etc/caddy/Caddyfile
-  - echo "xportalx" > /etc/caddy/Caddyfile
+  - echo "portal.fxglobe.io" > /etc/caddy/Caddyfile
   - echo "reverse_proxy localhost:3030"
   - systemctl restart caddy   
   - docker login --username applebrie --password HDcDPm7w4GLjgtKRN7g85Kh68p8qZZgi 
@@ -29,5 +29,5 @@ runcmd:
   - cd cloud-config 
   - curl ifconfig.me > ip
   - git add --all
-  - git commit -m "publishing public ip of xportalx"
+  - git commit -m "publishing public ip of portal.fxglobe.io"
   - git push   
